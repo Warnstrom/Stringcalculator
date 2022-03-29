@@ -9,11 +9,6 @@ describe("Test for Add method", () => {
     jest.spyOn(calculator, "Add");
     jest.spyOn(calculator.logger, "log");
   });
-  it("Should return 1 for add(1)", () => {
-    const sum = calculator.Add("1");
-    expect(sum).toBe(1);
-  });
-
   it("Should return 100 for add(100)", () => {
     const sum = calculator.Add("100");
     expect(sum).toBe(100);
