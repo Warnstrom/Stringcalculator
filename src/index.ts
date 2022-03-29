@@ -5,8 +5,12 @@ enum constants {
 }
 
 export class StringCalculator {
-  static calledCount: { [key: string]: number } = { add: 0 };
-  static Add(numbersString: string): number {
+  private calledCount: { [key: string]: number } = { add: 0 };
+  readonly logger: Ilogger;
+  constructor(logger: Ilogger) {
+    this.logger = logger;
+  }
+  Add(numbersString: string): number {
     const validateCustomDelimiters: boolean = numbersString.startsWith(
       constants.CUSTOM_DELIMITER_BEGIN
     );
@@ -27,10 +31,15 @@ export class StringCalculator {
         return sum;
       }
     } else {
-      const numbers: number[] = numbersString
-        .split(/[\n,]/)
-        .map(Number)
-        .filter((x: number) => x < constants.CUSTOM_NUMBER_LIMIT);
+      const numbers: number[] = numbersString.split(/[\n,]/).map(Number);
+      //.filter((x: number) => x < constants.CUSTOM_NUMBER_LIMIT);
+      for (const n of numbers) {
+        if (n > constants.CUSTOM_NUMBER_LIMIT) {
+          this.logger.log(n);
+          let test = numbers.indexOf(n);
+          numbers.splice(test, 1);
+        }
+      }
       const negatives = numbers.filter((x: number) => Math.sign(x) === -1);
       if (negatives.length) {
         throw new Error(`negatives not allowed: ${negatives.join(", ")}`);
@@ -41,10 +50,10 @@ export class StringCalculator {
     }
   }
 
-  static getCalledCount(functionName: string) {
+  getCalledCount(functionName: string): number {
     return this.calledCount[functionName];
   }
-  static getCustomDelimiters(numbers: string) {
+  getCustomDelimiters(numbers: string): string {
     const start =
       numbers.indexOf(constants.CUSTOM_DELIMITER_BEGIN) + constants.CUSTOM_DELIMITER_BEGIN.length;
     const end = numbers.indexOf(constants.CUSTOM_DELIMITER_END);
